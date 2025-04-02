@@ -21,7 +21,7 @@ def load_config():
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r') as f:
             return json.load(f)
-    return {"fields": ["ID", "Type", "Created by:", "Customer name:", "Customer ID-number:", "Date", "Price", "Notes:"]}
+    return {"fields": ["ID", "Type", "Created by:", "Customer name:", "Customer ID-number:", "Date", "Price", "Notes:"]} #i need delete it
 
 # Функция для сохранения конфигурации
 def save_config(config):
