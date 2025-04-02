@@ -1,3 +1,3 @@
 {
-  "fields": ["ID", "Тип", "Товар", "Цена", "DATUM", "Клиент", "Сумма", "Статус"]
+  "fields": ["ID", "Type", "Created by:", "Customer name:", "Customer ID-number:", "Date", "Price", "Notes:"]
 }

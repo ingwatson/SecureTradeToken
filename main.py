@@ -21,7 +21,7 @@ def load_config():
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r') as f:
             return json.load(f)
-    return {"fields": ["ID", "Тип", "Предмет", "Цена", "Дата"]}
+    return {"fields": ["ID", "Type", "Created by:", "Customer name:", "Customer ID-number:", "Date", "Price", "Notes:"]}
 
 # Функция для сохранения конфигурации
 def save_config(config):
@@ -73,12 +73,6 @@ class TradeApp(QWidget):
         self.form_layout = QFormLayout()
         self.field_inputs = {}
 
-        # Поле для ввода пароля
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
-        self.layout.addWidget(QLabel("Введите пароль:"))
-        self.layout.addWidget(self.password_input)
-
         # Генерация полей из конфигурации
         for field in self.config["fields"]:
             input_field = QLineEdit()
@@ -86,6 +80,12 @@ class TradeApp(QWidget):
             self.form_layout.addRow(QLabel(field), input_field)
 
         self.layout.addLayout(self.form_layout)
+
+        # Поле для ввода пароля
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.layout.addWidget(QLabel("Введите пароль:"))
+        self.layout.addWidget(self.password_input)
 
         # Кнопка сохранения
         self.save_button = QPushButton("Создать сделку")
