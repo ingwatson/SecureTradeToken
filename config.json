@@ -1,3 +1,7 @@
 {
-  "fields": ["ID", "Type", "Created by:", "Customer name:", "Customer ID-number:", "Date", "Price", "Notes:"]
+    "fields": [
+        "ID",
+        "Email",
+        "POLE"
+    ]
 }
