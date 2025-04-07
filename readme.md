@@ -42,4 +42,5 @@ SecureTradeToken is a Python-based project designed to facilitate secure and eff
 2. Follow the on-screen instructions to perform trade transactions securely.
 
 ## Contact
-For any inquiries or support, please contact [ingwatson](https://github.com/ingwatson).
+For any inquiries or support, please contact [ingwatson](https://github.com/ingwatson), and see [Github Wiki](https://github.com/ingwatson/SecureTradeToken/wiki), or create an issue in the repository.
+

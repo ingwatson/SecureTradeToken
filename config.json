@@ -1,7 +1,10 @@
 {
     "fields": [
         "ID",
-        "Email",
-        "POLE"
+        "TYPE:",
+        "ITEM",
+        "PRICE",
+        "CUSTOMER ID-number",
+        "CHUJ"
     ]
 }
