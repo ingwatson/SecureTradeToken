@@ -1,7 +1,8 @@
 # SecureTradeToken
 
 ## Description
-SecureTradeToken is a Python-based project designed to facilitate secure and efficient trade transactions using tokenization.
+Program allows users to securely manage trade data by filling out a customizable form, encrypting the data with a password, and generating a token. This token can then be shared with another user, who can decrypt it using the same password to access the original data.
+This process ensures that sensitive information is protected during transmission and storage, making it ideal for secure trade transactions.
 
 ## Features
 - Secure token generation and validation

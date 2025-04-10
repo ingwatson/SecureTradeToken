@@ -1,10 +1,6 @@
 {
     "fields": [
-        "ID",
-        "TYPE:",
-        "ITEM",
-        "PRICE",
-        "CUSTOMER ID-number",
-        "CHUJ"
+        "NAME",
+        "SURNAME"
     ]
 }

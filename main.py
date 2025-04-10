@@ -13,8 +13,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButt
                              QVBoxLayout, QFormLayout, QMessageBox, QHBoxLayout, QListWidget, QInputDialog)
 import pyperclip  # Pro práci se schránkou
 
-CONFIG_FILE = "config.json"
-
+CONFIG_FILE = "config.json"  # Soubor pro konfiguraci polí obchodu
 # Funkce pro generování klíče z hesla
 def derive_key(password: str, salt: bytes) -> bytes:
     return hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000, dklen=32)
