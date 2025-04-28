@@ -9,8 +9,9 @@ class CurrencyConverter(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Currency Converter")
-        self.setGeometry(200, 200, 300, 150)
+        self.setGeometry(200, 200, 350, 180) # Zvětšíme okno trochu
 
+        self.parent_window = parent # Uložení reference na hlavní okno
         self.layout = QVBoxLayout()
 
         self.from_currency_label = QLabel("From Currency:")
@@ -23,13 +24,11 @@ class CurrencyConverter(QDialog):
         self.result_display = QLineEdit()
         self.result_display.setReadOnly(True)
 
-        # Předpokládáme, že máš seznam dostupných měn. Pro jednoduchost je zde statický seznam.
-        # V reálné aplikaci by se tento seznam mohl načítat z API nebo konfiguračního souboru.
         self.currencies = ["USD", "EUR", "CZK", "GBP", "JPY"]
         self.from_currency_combo.addItems(self.currencies)
         self.to_currency_combo.addItems(self.currencies)
         self.from_currency_combo.setCurrentText("CZK")
-        self.to_currency_combo.setCurrentText("EUR")
+        self.to_currency_combo.setCurrentText("USD") # Změníme výchozí cílovou měnu pro lepší demonstraci
 
         controls_layout = QHBoxLayout()
         controls_layout.addWidget(self.amount_label)
@@ -39,6 +38,11 @@ class CurrencyConverter(QDialog):
         self.convert_button = QPushButton("Convert")
         self.convert_button.clicked.connect(self.convert_currency)
         button_layout.addWidget(self.convert_button)
+
+        self.paste_button = QPushButton("Paste to Price")
+        self.paste_button.clicked.connect(self.paste_to_price)
+        self.paste_button.setEnabled(False) # Na začátku je tlačítko neaktivní
+        button_layout.addWidget(self.paste_button)
 
         self.layout.addWidget(self.from_currency_label)
         self.layout.addWidget(self.from_currency_combo)
@@ -50,6 +54,7 @@ class CurrencyConverter(QDialog):
         self.layout.addWidget(self.result_display)
 
         self.setLayout(self.layout)
+        self.converted_amount = None # Proměnná pro uložení výsledku konverze
 
     def convert_currency(self):
         from_currency = self.from_currency_combo.currentText()
@@ -65,24 +70,40 @@ class CurrencyConverter(QDialog):
             QMessageBox.warning(self, "Invalid Input", "Please enter a valid number for the amount.")
             return
 
-        # Zde budeme volat API pro získání směnného kurzu.
-        # Pro tento příklad použijeme veřejné API exchangerate-api.com.
         api_url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
 
         try:
             response = requests.get(api_url)
-            response.raise_for_status()  # Raise an exception for HTTP errors
+            response.raise_for_status()
             data = response.json()
             rate = data['rates'].get(to_currency)
             if rate is not None:
-                result = amount * rate
-                self.result_display.setText(f"{result:.2f} {to_currency}")
+                self.converted_amount = amount * rate
+                result_text = f"{self.converted_amount:.2f} {to_currency}"
+                self.result_display.setText(result_text)
+                # Aktivujeme tlačítko pro vložení, pokud je výsledek k dispozici
+                self.paste_button.setEnabled(True)
             else:
                 QMessageBox.critical(self, "Conversion Error", f"Could not find exchange rate for {to_currency}.")
+                self.paste_button.setEnabled(False)
+                self.converted_amount = None
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(self, "Network Error", f"Could not fetch exchange rates. Please check your internet connection.\n{e}")
+            self.paste_button.setEnabled(False)
+            self.converted_amount = None
         except (json.JSONDecodeError, KeyError):
             QMessageBox.critical(self, "API Error", "Failed to parse exchange rate data.")
+            self.paste_button.setEnabled(False)
+            self.converted_amount = None
+
+    def paste_to_price(self):
+        if self.parent_window and hasattr(self.parent_window, 'field_inputs') and 'PRICE' in self.parent_window.field_inputs and self.converted_amount is not None:
+            self.parent_window.field_inputs['PRICE'].setText(f"{self.converted_amount:.2f}")
+            QMessageBox.information(self, "Success", f"Result pasted to the 'PRICE' field.")
+        elif not ('PRICE' in self.parent_window.field_inputs):
+            QMessageBox.warning(self, "Warning", "The 'PRICE' field was not found in the main window.")
+        else:
+            QMessageBox.warning(self, "Warning", "No conversion result available to paste.")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
