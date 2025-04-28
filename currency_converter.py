@@ -1,6 +1,7 @@
 import sys
 import json
 import requests
+import datetime
 from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
                              QLineEdit, QPushButton, QMessageBox)
 from PyQt5.QtCore import Qt
@@ -9,7 +10,7 @@ class CurrencyConverter(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Currency Converter")
-        self.setGeometry(200, 200, 350, 180)
+        self.setGeometry(200, 200, 350, 200)
 
         self.parent_window = parent
         self.layout = QVBoxLayout()
@@ -55,11 +56,11 @@ class CurrencyConverter(QDialog):
 
         self.setLayout(self.layout)
         self.converted_amount = None
-        self.target_currency = None # Přidáme proměnnou pro uložení cílové měny
+        self.target_currency = None
 
     def convert_currency(self):
         from_currency = self.from_currency_combo.currentText()
-        self.target_currency = self.to_currency_combo.currentText() # Uložíme cílovou měnu
+        self.target_currency = self.to_currency_combo.currentText()
         amount_str = self.amount_input.text()
 
         try:
@@ -80,7 +81,8 @@ class CurrencyConverter(QDialog):
             rate = data['rates'].get(self.target_currency)
             if rate is not None:
                 self.converted_amount = amount * rate
-                result_text = f"{self.converted_amount:.2f} {self.target_currency}"
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                result_text = f"{self.converted_amount:.2f} {self.target_currency} (as of {timestamp})"
                 self.result_display.setText(result_text)
                 self.paste_button.setEnabled(True)
             else:
