@@ -13,6 +13,9 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButt
                              QVBoxLayout, QFormLayout, QMessageBox, QHBoxLayout, QListWidget, QInputDialog)
 import pyperclip  # For working with the clipboard
 
+# Import nového okna
+from currency_converter import CurrencyConverter
+
 CONFIG_FILE = "config.json"  # File for storing trade field configuration
 
 # Function to generate a key from a password
@@ -120,6 +123,7 @@ class StoreApp(QWidget):
         super().__init__()
         self.config = load_config()
         self.initUI()
+        self.converter_window = None # Instance okna pro převod měn
 
     def initUI(self):
         self.setWindowTitle("Trade Management")
@@ -149,6 +153,11 @@ class StoreApp(QWidget):
         self.config_button.clicked.connect(self.open_config_editor)
         self.layout.addWidget(self.config_button)
 
+        # Přidání tlačítka pro otevření okna převodníku měn
+        self.converter_button = QPushButton("Currency Converter")
+        self.converter_button.clicked.connect(self.open_currency_converter)
+        self.layout.addWidget(self.converter_button)
+
         self.setLayout(self.layout)
 
     def load_fields(self):
@@ -167,6 +176,11 @@ class StoreApp(QWidget):
     def open_config_editor(self):
         self.config_editor = ConfigEditor(self)
         self.config_editor.show()
+
+    def open_currency_converter(self):
+        if self.converter_window is None:
+            self.converter_window = CurrencyConverter(self)
+        self.converter_window.show()
 
     def save_store(self):
         store_data = {field: self.field_inputs[field].text() for field in self.field_inputs}
