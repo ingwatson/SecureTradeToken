@@ -1,31 +1,64 @@
-name: Build EXE on Windows
- 
- on:
-   workflow_dispatch:
- 
- jobs:
-   build:
-     runs-on: windows-latest
- 
-     steps:
-       - uses: actions/checkout@v4
- 
-       - uses: actions/setup-python@v4
-         with:
-           python-version: '3.11'
- 
-       - name: Install dependencies
-         run: |
-           python -m pip install --upgrade pip
-           pip install -r requirements.txt
-           pip install pyinstaller
- 
-       - name: Build EXE
-         run: |
-           pyinstaller main.py --onefile --noconfirm --windowed
- 
-           pyinstaller main.py --onefile --noconfirm --windowed --name SecureTradeToken
-       - name: Upload artifact
-         uses: actions/upload-artifact@v4
-         with:
-           name: exe-build
+name: Build EXE
+
+on:
+  workflow_dispatch: # Pouze ruční spuštění
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build EXE
+        id: build_exe
+        shell: powershell
+        run: |
+          pyinstaller main.py --onefile --noconfirm --windowed --name TradeManagementApp
+          $ExePath = "dist/TradeManagementApp.exe"
+          $ExeFilename = "TradeManagementApp.exe"
+
+          Write-Host "Checking for EXE at $ExePath"
+          if (Test-Path $ExePath) {
+            Write-Host "EXE found. Setting outputs..."
+            echo "exe_path=$ExePath" >> $env:GITHUB_OUTPUT
+            echo "exe_filename=$ExeFilename" >> $env:GITHUB_OUTPUT
+            Write-Host "Output 'exe_path' set to: $ExePath"
+            Write-Host "Output 'exe_filename' set to: $ExeFilename"
+          } else {
+            Write-Host "Error: EXE not found at $ExePath after build!"
+            if (Test-Path "dist") {
+              Write-Host "Contents of 'dist' directory:"
+              Get-ChildItem -Path "dist" | ForEach-Object { Write-Host $_.FullName }
+            } else {
+              Write-Host "'dist' directory not found."
+            }
+            Write-Host "Contents of current directory (WORKFLOW_WORKSPACE):"
+            Get-ChildItem -Path $env:GITHUB_WORKSPACE | ForEach-Object { Write-Host $_.FullName }
+            exit 1
+          }
+
+      - name: Debug Outputs (Optional)
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host "Debug - steps.build_exe.outputs.exe_path: ${{ steps.build_exe.outputs.exe_path }}"
+          Write-Host "Debug - steps.build_exe.outputs.exe_filename: ${{ steps.build_exe.outputs.exe_filename }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: exe-build-${{ github.run_id }}
+          path: ${{ steps.build_exe.outputs.exe_path }}
